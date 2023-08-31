@@ -1,4 +1,9 @@
-import { XR, NonImmersiveCamera } from "@coconut-xr/natuerlich/react";
+import {
+  XR,
+  NonImmersiveCamera,
+  ImmersiveSessionOrigin,
+  useEnterXR,
+} from "@coconut-xr/natuerlich/react";
 import { XWebPointers } from "@coconut-xr/xinteraction/react";
 import {
   CuboidCollider,
@@ -13,31 +18,43 @@ import {
 import { RevoluteImpulseJoint } from "@dimforge/rapier3d-compat";
 import { RefObject, Suspense, useEffect, useRef } from "react";
 import { Model as Car } from "./car.js";
-import { OrbitControls } from "@react-three/drei";
+import { Environment, Gltf, OrbitControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { Euler, Quaternion } from "three";
 import { useStore } from "./state.js";
+import { Controllers, Hands } from "@coconut-xr/natuerlich/defaults";
+import { EngineAudio } from "./sound.js";
 
-var stearingValue = 0;
-var speedValue = 0;
+const options: XRSessionInit = {
+  requiredFeatures: ["local-floor"],
+  optionalFeatures: ["hand-tracking"],
+};
 
 export default function App() {
+  const enterVR = useEnterXR("immersive-vr", options);
+  useEffect(() => {
+    const element = document.getElementById("enter-vr");
+    if (element == null) {
+      return;
+    }
+
+    element.addEventListener("click", enterVR);
+    return () => element.removeEventListener("click", enterVR);
+  }, []);
   return (
     <>
       <XR />
-      <OrbitControls />
+      <Environment preset="sunset" blur={0.2} background />
       <XWebPointers />
       <Suspense>
-        <Physics debug>
+        <Physics>
           <Suspense>
             <CarPhysics />
           </Suspense>
           <ambientLight intensity={10} />
           <directionalLight intensity={10} position={[1, 1, 1]} />
-          <RigidBody>
-            <mesh scale={100} rotation-x={-Math.PI / 2}>
-              <planeGeometry />
-            </mesh>
+          <RigidBody gravityScale={0} position={[0, -5, 0]}>
+            <Gltf scale={0.3} src="/track.glb" />
           </RigidBody>
         </Physics>
       </Suspense>
@@ -107,7 +124,12 @@ function CarPhysics() {
           mass={0.01}
         >
           <Car scale={0.35} position={[0, -0.85, 0]} rotation-y={Math.PI} />
+          <EngineAudio />
           <NonImmersiveCamera position={[-0.5, 0.4, 0.5]} />
+          <ImmersiveSessionOrigin position={[-0.5, -0.9, 0.5]}>
+            <Hands type="grab" />
+            <Controllers type="grab" />
+          </ImmersiveSessionOrigin>
         </CuboidCollider>
       </RigidBody>
       <RigidBody

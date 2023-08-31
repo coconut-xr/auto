@@ -35,6 +35,7 @@ type GLTFResult = GLTF & {
     Object_18: THREE.Mesh;
     Object_19: THREE.Mesh;
     Object_2: THREE.Mesh;
+    Object_2001: THREE.Mesh;
     Object_20: THREE.Mesh;
     Object_21: THREE.Mesh;
     Object_22: THREE.Mesh;
@@ -236,12 +237,15 @@ export function Model(props: JSX.IntrinsicElements["group"]) {
           geometry={nodes.wheel.geometry}
           material={materials.INTERIOR_LOD0}
         />
+        <Speed
+          geometry={nodes.Object_2001.geometry}
+          material={materials.INTERIOR_LOD0}
+        />
       </group>
     </group>
   );
 }
 
-const defaultQuaternion = new Quaternion();
 const currentPointToObjectNormal = new Vector3();
 const wheelRotationPlaneNormal = new Vector3(0, 1, 0).applyEuler(
   new Euler(18 * (Math.PI / 180), 0, 0)
@@ -331,6 +335,100 @@ function SteeringWheel({
         rotation-x={18 * (Math.PI / 180)}
       >
         <cylinderGeometry />
+      </mesh>
+      <mesh geometry={geometry} material={material} />
+    </group>
+  );
+}
+
+const speedPlaneNormal = new Vector3(1, 0, 0);
+
+function Speed({
+  geometry,
+  material,
+}: {
+  geometry: BufferGeometry;
+  material: Material;
+}) {
+  const ref = useRef<Group>(null);
+  const downState = useRef<{
+    pointerId: number;
+    pointToObjectNormal: Vector3;
+  }>();
+  useFrame(() => {
+    if (ref.current == null) {
+      return;
+    }
+    const { speed } = useStore.getState();
+    ref.current.rotation.x = speed + -1.421;
+  });
+  return (
+    <group
+      ref={ref}
+      position={[0.354, -0.724, 1.542]}
+      scale={[2.219, 3.267, 2.249]}
+    >
+      <mesh
+        onPointerDown={(e) => {
+          if (
+            ref.current != null &&
+            downState.current == null &&
+            isXIntersection(e)
+          ) {
+            e.stopPropagation();
+            (e.target as HTMLElement).setPointerCapture(e.pointerId);
+            downState.current = {
+              pointerId: e.pointerId,
+              pointToObjectNormal: ref.current
+                .parent!.worldToLocal(e.point.clone())
+                .negate()
+                .add(ref.current.position)
+                .projectOnPlane(speedPlaneNormal)
+                .normalize(),
+            };
+          }
+        }}
+        onPointerUp={(e) => {
+          if (downState.current?.pointerId != e.pointerId) {
+            return;
+          }
+          downState.current = undefined;
+          state.setNatuerlichSpeed(0);
+        }}
+        onPointerMove={(e) => {
+          if (
+            ref.current == null ||
+            downState.current == null ||
+            e.pointerId != downState.current.pointerId ||
+            !isXIntersection(e)
+          ) {
+            return;
+          }
+          ref.current
+            .parent!.worldToLocal(currentPointToObjectNormal.copy(e.point))
+            .negate()
+            .add(ref.current.position)
+            .projectOnPlane(speedPlaneNormal)
+            .normalize();
+
+          const invert =
+            currentPointToObjectNormal.y <
+            downState.current.pointToObjectNormal.y;
+
+          state.setNatuerlichSpeed(
+            (invert ? -1 : 1) *
+              downState.current.pointToObjectNormal.angleTo(
+                currentPointToObjectNormal
+              )
+          );
+        }}
+        visible={false}
+        position={[0, -0.3, 0.07]}
+        scale={0.1}
+        rotation-x={(-15 / 180) * Math.PI}
+        scale-y={0.7}
+      >
+        <boxGeometry />
       </mesh>
       <mesh geometry={geometry} material={material} />
     </group>

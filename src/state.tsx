@@ -4,6 +4,7 @@ import { combine } from "zustand/middleware";
 import { RevoluteImpulseJoint } from "@dimforge/rapier3d-compat";
 
 type State = {
+  interacted: boolean;
   up: boolean;
   down: boolean;
   left: boolean;
@@ -32,10 +33,14 @@ const initialState: State = {
   speed: 0,
   motorRefs: [],
   steeringRefs: [],
+  interacted: false,
 };
 
 export const useStore = create(
   combine(initialState, (set, get) => ({
+    onClick() {
+      set({ interacted: true });
+    },
     updateControls() {
       const {
         motorRefs,
@@ -52,7 +57,7 @@ export const useStore = create(
         if (ref.current == null) {
           continue;
         }
-        ref.current.configureMotorVelocity(speed, 0);
+        ref.current.configureMotorVelocity(speed * 100, 0);
       }
       for (const ref of steeringRefs) {
         if (ref.current == null) {
@@ -78,10 +83,10 @@ export const useStore = create(
       let keyboardSpeed = 0;
       let keyboardSteering = 0;
       if (up) {
-        keyboardSpeed += 50;
+        keyboardSpeed += 0.4;
       }
       if (down) {
-        keyboardSpeed -= 50;
+        keyboardSpeed -= 0.4;
       }
       if (right) {
         keyboardSteering += 200;
@@ -143,3 +148,5 @@ window.addEventListener("keydown", (e) => {
 window.addEventListener("keyup", (e) => {
   useStore.getState().onKeyUp(e.key);
 });
+
+window.addEventListener("click", useStore.getState().onClick);

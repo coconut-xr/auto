@@ -110,7 +110,7 @@ type ContextType = Record<
 >;
 
 export function Model(props: JSX.IntrinsicElements["group"]) {
-  const { nodes, materials } = useGLTF("/car.glb") as GLTFResult;
+  const { nodes, materials } = useGLTF("/auto/car.glb") as GLTFResult;
   return (
     <group {...props} dispose={null}>
       <group rotation={[-Math.PI / 2, 0, 0]}>
@@ -435,4 +435,4 @@ function Speed({
   );
 }
 
-useGLTF.preload("/car.glb");
+useGLTF.preload("/auto/car.glb");

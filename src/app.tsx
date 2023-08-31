@@ -47,14 +47,14 @@ export default function App() {
       <Environment preset="sunset" blur={0.2} background />
       <XWebPointers />
       <Suspense>
-        <Physics>
+        <Physics debug>
           <Suspense>
             <CarPhysics />
           </Suspense>
           <ambientLight intensity={10} />
           <directionalLight intensity={10} position={[1, 1, 1]} />
           <RigidBody gravityScale={0} position={[0, -5, 0]}>
-            <Gltf scale={0.3} src="/track.glb" />
+            <Gltf scale={0.3} src="/auto/track.glb" />
           </RigidBody>
         </Physics>
       </Suspense>

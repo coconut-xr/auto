@@ -6,7 +6,7 @@
 
 ### An immersive car drifting demo that takes your racing experience to a whole new dimension!
 
-Made with [`@coconut-xr/natuerlich`](https://github.com/coconut-xr/natuerlich) **(WebXR)** ,  [`react-three-fiber`](https://github.com/pmndrs/react-three-fiber) **(3D)**, [`rapier`](https://github.com/pmndrs/react-three-rapier) **(3D)** and [`three.js`](https://github.com/mrdoob/three.js) **(3D)**.
+Made with [`@coconut-xr/natuerlich`](https://github.com/coconut-xr/natuerlich) **(WebXR)** ,  [`react-three-fiber`](https://github.com/pmndrs/react-three-fiber) **(3D)**, [`rapier`](https://github.com/pmndrs/react-three-rapier) **(Physics)** and [`three.js`](https://github.com/mrdoob/three.js) **(also 3D)**.
 
 Check out our release video over on [Twitter](https://twitter.com/coconut_xr/)
 

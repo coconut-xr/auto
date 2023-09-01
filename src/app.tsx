@@ -8,18 +8,15 @@ import { XWebPointers } from "@coconut-xr/xinteraction/react";
 import {
   CuboidCollider,
   CylinderCollider,
-  MeshCollider,
   Physics,
   RapierRigidBody,
   RigidBody,
   interactionGroups,
   useRevoluteJoint,
 } from "@react-three/rapier";
-import { RevoluteImpulseJoint } from "@dimforge/rapier3d-compat";
-import { RefObject, Suspense, useEffect, useRef } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { Model as Car } from "./car.js";
-import { Environment, Gltf, OrbitControls } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
+import { Environment, Gltf } from "@react-three/drei";
 import { Euler, Quaternion } from "three";
 import { useStore } from "./state.js";
 import { Controllers, Hands } from "@coconut-xr/natuerlich/defaults";
@@ -47,7 +44,13 @@ export default function App() {
       <Environment preset="sunset" blur={0.2} background />
       <XWebPointers />
       <Suspense>
-        <Physics debug>
+        <Physics
+          updatePriority={-50}
+          
+          maxStabilizationIterations={100}
+          maxVelocityFrictionIterations={100}
+          maxVelocityIterations={200}
+        >
           <Suspense>
             <CarPhysics />
           </Suspense>
@@ -92,13 +95,13 @@ function CarPhysics() {
 
   useRevoluteJoint(wheel3, stearing1, [
     [0, 0, 0],
-    [0, 0, 0],
+    [0.2, 0, 0],
     [1, 0, 0],
   ]);
 
   useRevoluteJoint(wheel4, stearing2, [
     [0, 0, 0],
-    [0, 0, 0],
+    [-0.2, 0, 0],
     [1, 0, 0],
   ]);
 
@@ -114,6 +117,12 @@ function CarPhysics() {
     [0, 1, 0],
   ]);
 
+  const friction = 1.3
+  const frictionFront = 1.4
+  const weight = 10
+  const weightWheels = 0.5
+  const restitution = 0.0001
+
   return (
     <>
       <RigidBody ref={body} colliders={false} restitution={0.1}>
@@ -121,9 +130,9 @@ function CarPhysics() {
           collisionGroups={interactionGroups(1, 1)}
           position={[0, 0.85, 0]}
           args={[0.8, 0.7, 2.8]}
-          mass={0.01}
+          mass={weight}
         >
-          <Car scale={0.35} position={[0, -0.85, 0]} rotation-y={Math.PI} />
+          <Car scale={0.33} position={[0, -0.85, 0]} rotation-y={Math.PI} />
           <EngineAudio />
           <NonImmersiveCamera position={[-0.5, 0.4, 0.5]} />
           <ImmersiveSessionOrigin position={[-0.5, -0.9, 0.5]}>
@@ -136,7 +145,7 @@ function CarPhysics() {
         collisionGroups={interactionGroups([], [])}
         ref={stearing1}
         canSleep={false}
-        position={[3 * 0.35, 0.4, -5 * 0.35]}
+        position={[2.5 * 0.35, 0.4, -5 * 0.35]}
         restitution={0.01}
       >
         <CuboidCollider args={[0.1, 0.1, 0.1]} />
@@ -144,7 +153,7 @@ function CarPhysics() {
       <RigidBody
         collisionGroups={interactionGroups([], [])}
         ref={stearing2}
-        position={[-3 * 0.35, 0.4, -5 * 0.35]}
+        position={[-2.5 * 0.35, 0.4, -5 * 0.35]}
         canSleep={false}
         restitution={0.01}
       >
@@ -155,8 +164,9 @@ function CarPhysics() {
         ref={wheel1}
         position={[3 * 0.35, 0.4, 5 * 0.35]}
         colliders={false}
-        restitution={0.01}
-        friction={1}
+        restitution={restitution}
+        friction={friction}
+        mass={weightWheels}
         collisionGroups={interactionGroups(0, 0)}
       >
         <CylinderCollider
@@ -169,8 +179,9 @@ function CarPhysics() {
         ref={wheel2}
         position={[-3 * 0.35, 0.4, 5 * 0.35]}
         colliders={false}
-        restitution={0.01}
-        friction={1}
+        restitution={restitution}
+        friction={friction}
+        mass={weightWheels}
         collisionGroups={interactionGroups(0, 0)}
       >
         <CylinderCollider
@@ -183,8 +194,9 @@ function CarPhysics() {
         ref={wheel3}
         position={[3 * 0.35, 0.4, -5 * 0.35]}
         colliders={false}
-        restitution={0.01}
-        friction={1}
+        restitution={restitution}
+        friction={frictionFront}
+        mass={weightWheels}
         collisionGroups={interactionGroups(0, 0)}
       >
         <CylinderCollider
@@ -197,8 +209,9 @@ function CarPhysics() {
         ref={wheel4}
         position={[-3 * 0.35, 0.4, -5 * 0.35]}
         colliders={false}
-        restitution={0.01}
-        friction={1}
+        restitution={restitution}
+        friction={frictionFront}
+        mass={weightWheels}
         collisionGroups={interactionGroups(0, 0)}
       >
         <CylinderCollider

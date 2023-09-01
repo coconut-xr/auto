@@ -57,13 +57,13 @@ export const useStore = create(
         if (ref.current == null) {
           continue;
         }
-        ref.current.configureMotorVelocity(speed * 100, 0);
+        ref.current.configureMotorVelocity(speed * 110, 1000);
       }
       for (const ref of steeringRefs) {
         if (ref.current == null) {
           continue;
         }
-        ref.current.configureMotorPosition(steering * 0.25, 10000000, 0);
+        ref.current.configureMotorPosition(steering * 0.25, 1000000, 5);
       }
     },
     setNatuerlichSteering(natuerlichSteering: number) {

@@ -8,7 +8,7 @@
 
 Made with [`@coconut-xr/natuerlich`](https://github.com/coconut-xr/natuerlich) **(WebXR)** ,  [`react-three-fiber`](https://github.com/pmndrs/react-three-fiber) **(3D)**, [`rapier`](https://github.com/pmndrs/react-three-rapier) **(Physics)** and [`three.js`](https://github.com/mrdoob/three.js) **(also 3D)**.
 
-Check out our release video over on [Twitter](https://twitter.com/coconut_xr/)
+Check out our release video over on [Twitter](https://twitter.com/coconut_xr/status/1697613919617995254)
 
 Or hop right in -> [Auto 🚗 Demo](coconut-xr.github.io/auto/)
 

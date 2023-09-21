@@ -10,7 +10,7 @@ Made with [`@coconut-xr/natuerlich`](https://github.com/coconut-xr/natuerlich) *
 
 Check out our release video over on [Twitter](https://twitter.com/coconut_xr/status/1697613919617995254)
 
-Or hop right in -> [Auto 🚗 Demo](coconut-xr.github.io/auto/)
+Or hop right in -> [Auto 🚗 Demo](https://coconut-xr.github.io/auto/)
 
 *The demo lacks some features, so feel free to add your own implementations to the game! We'd love to see your videos about them! Pull requests are welcome!* 🤗
 
